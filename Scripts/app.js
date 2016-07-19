@@ -12,63 +12,40 @@
 (function () {
     "use strict";
 
+    var xhr;
+
+    // we can use a named function instead of an anonymous function
+    function readData() {
+        // data loaded  everything is okay
+        if (xhr.readyState == 4 && xhr.status == 200) {
+
+            var addressbook = JSON.parse(xhr.responseText);
+            var contacts = addressbook.contacts;
+
+            contacts.forEach(function (contact) {
+                console.log(contact);
+            }, this);
+
+        }
+    }
+
     // app entry function
     function init() {
-        console.log('App Started');
+        xhr = new XMLHttpRequest(); // step 1 - create xhr object
 
-        var mystring = "MyStrIng";
-        console.log("Original string: " + mystring);
-        var newString = mystring.toLowerCase();
-        console.log("New String: " + newString);
 
-        var firstNameLastName = "John Smith";
-        var spacePosition = firstNameLastName.indexOf(" ");
-        console.log(spacePosition);
+        // NOTE: the path is relative to the html, not app.js
+        // xhr.open("GET", "../addressbook.json", true);
+        xhr.open("GET", "contacts.json", true); // step 2 - open request
 
-        var firstName = firstNameLastName.slice(0, spacePosition + 1);
-        console.log(firstName)
+        // step 3 - send request
+        xhr.send(null);
 
-        var myArray = new Array();
-        myArray[0] = "firstString"
-        var myOtherArray = ["firstString", "secondString", 5, new Array()]
+        // step 4 - wait for file to load
+        // xhr.onreadystatechange = displayAddressInfoToConsole;
 
-        // 2 diff ways regexp in javascript
-        var regexp = /^Hello$/
-
-        var regexp2 = new RegExp("Hello");
-
-        function Card(face, suit) {
-            this.face = face;
-            this.suit = suit;
-        }
-
-        var deck = [
-            new Card("Ace", "Spades"),
-            new Card("King", "Diamonds"),
-            new Card("Jack", "Clubs"),
-            new Card("Queen", "Hearts"),
-            new Card("10", "Spades")
-        ]
-
-        // 3 ways to iterate through array in JavaScript
-        // for loop
-        // not efficient in this case because calculating length
-        // everytime. for large data sets can cause overhead
-        for (var index = 0; index < deck.length; index++) {
-            console.log(deck[index].face + " " + deck[index].suit)
-        }
-
-        // foreach loop - preferred method for this type of activity
-        deck.forEach(function (card) {
-            console.log(card.face + " " + card.suit);
-        }, this);
-
-        // forin loop
-        for (var card in deck) {
-            if (deck.hasOwnProperty(card)) {
-                console.log(deck[card].face + " " + deck[card].suit)
-            }
-        }
+        // addEventListener preferred over onevents 
+        xhr.addEventListener("readystatechange", readData);
     }
 
 
