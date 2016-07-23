@@ -12,14 +12,15 @@
 (function () {
     "use strict";
 
-    var xhr;
+    var xhrAddressBook;
+    var xhrNavData;
 
     // we can use a named function instead of an anonymous function
     function readData() {
-        // data loaded  everything is okay
-        if (xhr.readyState == 4 && xhr.status == 200) {
+        // data loaded             everything is okay
+        if (xhrAddressBook.readyState == 4 && xhrAddressBook.status == 200) {
 
-            var addressbook = JSON.parse(xhr.responseText);
+            var addressbook = JSON.parse(xhrAddressBook.responseText);
             var contacts = addressbook.contacts;
 
             contacts.forEach(function (contact) {
@@ -29,23 +30,53 @@
         }
     }
 
+    function readNavData() {
+        if (xhrNavData.readyState == 4 && xhrNavData.status == 200) {
+
+            // create a reference to the HTMLElement
+            var mainNav = document.getElementById("mainNav");
+            mainNav.innerHTML = xhrNavData.responseText;
+
+            setActivePage();
+        }
+    }
+
+    function readAddressBook() {
+        xhrAddressBook = new XMLHttpRequest(); // step 1 - create xhr object
+        // NOTE: the path is relative to the html, not app.js
+        xhrAddressBook.open("GET", "contacts.json", true); // step 2 - open request
+        xhrAddressBook.send(null); // step 3 - send request
+        xhrAddressBook.addEventListener("readystatechange", readData); // step 4 - wait for file to load
+    }
+
+    function setActivePage() {
+        switch (document.title) {
+            case "Home":
+                document.getElementById("index").setAttribute("class", "active");
+                break;
+            case "About Me":
+                document.getElementById("about").setAttribute("class", "active");
+                break;
+            case "Projects":
+                document.getElementById("projects").setAttribute("class", "active");
+                break;
+            case "Contact Me":
+                document.getElementById("contact").setAttribute("class", "active");
+                break;
+        }
+    }
+
+    function loadNavBar() {
+        xhrNavData = new XMLHttpRequest();
+        xhrNavData.open("GET", "Partials/navbar.html", true);
+        xhrNavData.send(null);
+        xhrNavData.addEventListener("readystatechange", readNavData);
+    }
+
     // app entry function
     function init() {
-        xhr = new XMLHttpRequest(); // step 1 - create xhr object
-
-
-        // NOTE: the path is relative to the html, not app.js
-        // xhr.open("GET", "../addressbook.json", true);
-        xhr.open("GET", "contacts.json", true); // step 2 - open request
-
-        // step 3 - send request
-        xhr.send(null);
-
-        // step 4 - wait for file to load
-        // xhr.onreadystatechange = displayAddressInfoToConsole;
-
-        // addEventListener preferred over onevents 
-        xhr.addEventListener("readystatechange", readData);
+        loadNavBar();
+        readAddressBook();
     }
 
 
