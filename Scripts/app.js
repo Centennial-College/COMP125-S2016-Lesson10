@@ -14,6 +14,7 @@
 
     var xhrAddressBook;
     var xhrNavData;
+    var xhrFooterData;
 
     // we can use a named function instead of an anonymous function
     function readData() {
@@ -31,6 +32,7 @@
     }
 
     function readNavData() {
+        // data loaded             everything is okay
         if (xhrNavData.readyState == 4 && xhrNavData.status == 200) {
 
             // create a reference to the HTMLElement
@@ -47,6 +49,20 @@
         xhrAddressBook.open("GET", "contacts.json", true); // step 2 - open request
         xhrAddressBook.send(null); // step 3 - send request
         xhrAddressBook.addEventListener("readystatechange", readData); // step 4 - wait for file to load
+    }
+
+    function readFooterData() {
+        // data loaded             everything is okay
+        if (xhrFooterData.readyState == 4 && xhrFooterData.status == 200) {
+
+            // create a reference to the HTMLElement
+            var footer = document.getElementById("footer");
+            footer.innerHTML = xhrFooterData.responseText;
+
+            var year = document.getElementById("year");
+            var date = new Date();
+            year.innerText = date.getFullYear();
+        }
     }
 
     function setActivePage() {
@@ -66,6 +82,13 @@
         }
     }
 
+    function loadFooter() {
+        xhrFooterData = new XMLHttpRequest();
+        xhrFooterData.open("GET", "Partials/footer.html", true);
+        xhrFooterData.send(null);
+        xhrFooterData.addEventListener("readystatechange", readFooterData);
+    }
+
     function loadNavBar() {
         xhrNavData = new XMLHttpRequest();
         xhrNavData.open("GET", "Partials/navbar.html", true);
@@ -76,7 +99,10 @@
     // app entry function
     function init() {
         loadNavBar();
+
         readAddressBook();
+
+        loadFooter();
     }
 
 
